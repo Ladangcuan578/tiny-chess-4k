@@ -21,7 +21,8 @@ Leaderboard: https://make.fun/bounty/tiny-chess-01
   depth-squared on beta cutoffs), late-move reductions (quiet moves only,
   not in check, after the first 3 moves, reduced by 1 ply with a full-depth
   re-search on fail-high), null-move pruning (R=2, only with a non-pawn
-  piece to move).
+  piece to move). The root move loop is factored into a `root(lo, hi)`
+  helper, called with the full window by the iterative-deepening driver.
 - **Quiescence:** captures and promotions out of check, every evasion in
   check, with delta pruning (margin 200) and stand-pat.
 - **Evaluation:** material (P100 N320 B330 R500 Q900) + piece-square tables
@@ -35,18 +36,20 @@ Leaderboard: https://make.fun/bounty/tiny-chess-01
 
 ## Local results (practice trials, 6 games each)
 
-| trial | Elo | W-D-L |
-|-------|-----|-------|
-| 0 | 1809 | 5-1-0 |
-| 1 | 1545 | 3-3-0 |
-| 2 | 1545 | 4-1-1 |
+| trial | Elo | W-D-L | spare plies |
+|-------|-----|-------|-------------|
+| 0 | 1809 | 5-1-0 | 607 |
+| 1 | 1545 | 3-3-0 | 329 |
+| 2 | 1545 | 4-1-1 | 330 |
 
 Mean 1633 vs the house (sunfish 4K) baseline mean of 1365 (+268). Per-trial
 leads over the baseline: +445, +94, +266. Floor for the final is 1154.
 `main.py` is the kit's `makefun compress` output of the readable source
-`engine.py` (kept beside it, uncommitted); the packed entry is 4013 bytes.
+`engine.py` (kept beside it, uncommitted); the packed entry is 4000 bytes.
 All three trials were graded on the packed `main.py` itself, run one at a
-time (parallel runs starve the bot of CPU and cost games on time).
+time (parallel runs starve the bot of CPU and cost games on time), and
+re-verified on the final packed artifact; the readable source reproduces
+trial 0 identically (Elo 1809, 5-1-0, 607 spare plies).
 
 ## License
 
